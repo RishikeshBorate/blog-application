@@ -2,6 +2,7 @@ package com.project.blog_application.models;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -10,8 +11,8 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id ;
     private String name ;
-    private String createdAt ;
-    private String updatedAt ;
+    private LocalDateTime createdAt ;
+    private LocalDateTime updatedAt ;
 
     @ManyToMany(mappedBy = "tags")
     private List<Post> posts ;
@@ -32,19 +33,19 @@ public class Tag {
         this.name = name;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 

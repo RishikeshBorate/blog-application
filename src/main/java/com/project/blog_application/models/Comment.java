@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.time.LocalDateTime;
+
 @Entity
 public class Comment {
     @Id
@@ -14,8 +16,8 @@ public class Comment {
     private String email ;
     private String comment ;
     private int postId ;
-    private String createdAt ;
-    private String updatedAt ;
+    private LocalDateTime createdAt ;
+    private LocalDateTime updatedAt ;
 
     public int getId() {
         return id;
@@ -57,19 +59,19 @@ public class Comment {
         this.postId = postId;
     }
 
-    public String getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(String createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public String getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 }
