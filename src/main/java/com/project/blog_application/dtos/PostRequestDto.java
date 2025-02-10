@@ -3,7 +3,6 @@ package com.project.blog_application.dtos;
 import com.project.blog_application.models.User;
 
 public class PostRequestDto {
-
     private Integer id ;
     private String title ;
     private String excerpt ;

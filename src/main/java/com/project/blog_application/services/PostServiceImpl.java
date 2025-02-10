@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Qualifier("PostServiceImpl")
 @Service
 public class PostServiceImpl implements PostService {
-
     private PostRespository postRespository ;
     private TagService tagService ;
 
@@ -57,5 +56,11 @@ public class PostServiceImpl implements PostService {
         post.setTags(tags);
 
         postRespository.save(post) ;
+    }
+
+    @Override
+    public List<Post> getAllPosts(){
+        List<Post> postList =  postRespository.findAll() ;
+        return postList;
     }
 }

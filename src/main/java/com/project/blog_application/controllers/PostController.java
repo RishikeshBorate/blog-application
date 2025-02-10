@@ -1,15 +1,17 @@
 package com.project.blog_application.controllers;
 
 import com.project.blog_application.dtos.PostRequestDto;
+import com.project.blog_application.models.Post;
 import com.project.blog_application.services.PostService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 public class PostController {
-
     private PostService postService ;
 
     public PostController(@Qualifier("PostServiceImpl") PostService postService){
@@ -28,6 +30,14 @@ public class PostController {
     public String createBlog(@ModelAttribute PostRequestDto postRequestDto){
        postService.createBlog(postRequestDto);
        return "redirect:/newpost" ;
+    }
+
+    @GetMapping("/")
+    public String getAllPosts(Model model){
+        List<Post> postList = postService.getAllPosts();
+        model.addAttribute("postList" , postList) ;
+        model.addAttribute("post" , new Post()) ;
+        return "dashboard" ;
     }
 
 }
