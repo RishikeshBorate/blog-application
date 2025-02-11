@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Qualifier("PostServiceImpl")
@@ -62,5 +63,11 @@ public class PostServiceImpl implements PostService {
     public List<Post> getAllPosts(){
         List<Post> postList =  postRespository.findAll() ;
         return postList;
+    }
+
+    @Override
+    public Post getPostById(Long id){
+        Optional<Post> postOptional = postRespository.findById(id) ;
+        return postOptional.get() ;
     }
 }

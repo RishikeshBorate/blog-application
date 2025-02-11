@@ -25,21 +25,15 @@
 <main>
     <div class="blog-container">
 
-            <div th:each="post: ${postList}" class="blog-card">
-
-                <form th:action="@{/editpost}"
-                      th:object="${post}"
-                      method="get">
+        <div th:object="${postList}" th:each="post: ${postList}" class="blog-card">
+            <a style="color:black" th:href="@{'/post/'+ ${post.id}}">
                     <input type="hidden" th:field="${post.id}"/>
                     <h2 th:text="${post.title}"> Post Title </h2>
-                <!--
-                <p class="author" th:text="${post.author.name}"> Author </p>
-                -->
+                   <!-- <p class="author" th:text="${post.author.name}"> Author </p> -->
                     <p th:text="${post.createdAt}"> createdAt </p>
                     <p th:text="${post.content}"> content </p>
-                    <button/>
-                </form>
-            </div>
+            </a>
+        </div>
 
 
     </div>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Post</title>
+    <link rel="stylesheet"
+          th:href="@{/css/poststyle.css}"/>
+
+</head>
+
+<body>
+<header>
+    <h2>My Blog Application</h2>
+    <a href="#" class="login">Login</a>
+</header>
+
+<main>
+    <article th:object="${post}" class="blog-post">
+        <input type="hidden" th:field="*{id}">
+        <h1 th:text="*{title}">Blog post title</h1>
+        <p class="author">Author</p>
+        <p class="content" th:text="*{content}">content</p>
+    </article>
+</main>
+</body>
+</html>

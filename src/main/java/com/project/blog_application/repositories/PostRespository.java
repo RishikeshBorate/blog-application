@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface PostRespository extends JpaRepository<Post , Integer> {
+public interface PostRespository extends JpaRepository<Post , Long> {
 
     @Override
     <S extends Post> S save(S entity);
 
     @Override
-    Optional<Post> findById(Integer integer);
+    Optional<Post> findById(Long aLong);
 
     @Override
     List<Post> findAll(Sort sort);
