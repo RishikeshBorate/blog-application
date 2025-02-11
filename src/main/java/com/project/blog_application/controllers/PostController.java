@@ -40,4 +40,10 @@ public class PostController {
         return "dashboard" ;
     }
 
+    @GetMapping("/post/{postId}")
+    public String getPostById(@PathVariable("postId") Long id , Model model) {
+        Post post = postService.getPostById(id);
+        model.addAttribute("post" , post);
+        return "post" ;
+    }
 }

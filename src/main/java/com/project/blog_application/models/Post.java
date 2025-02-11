@@ -9,9 +9,13 @@ import java.util.List;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id ;
+    private Long id ;
     private String title ;
+
+    @Column(length = 15000)
     private String excerpt ;
+
+    @Column(length = 15000)
     private String content ;
     private String publisher ;
     private boolean isPublished ;
@@ -24,11 +28,11 @@ public class Post {
     @ManyToMany
     private List<Tag> tags ;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

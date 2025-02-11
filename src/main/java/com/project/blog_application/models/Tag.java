@@ -9,7 +9,7 @@ import java.util.List;
 public class Tag {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id ;
+    private Long id ;
     private String name ;
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
@@ -17,11 +17,11 @@ public class Tag {
     @ManyToMany(mappedBy = "tags")
     private List<Post> posts ;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
