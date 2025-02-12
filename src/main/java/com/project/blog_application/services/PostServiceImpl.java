@@ -6,7 +6,6 @@ import com.project.blog_application.models.Tag;
 import com.project.blog_application.repositories.PostRespository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,21 +38,57 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
 
         List<Tag> tags = new ArrayList<>() ;
+//
+//        for(String name : tagStringList){
+//            Tag tag = new Tag() ;
+//
+//            tag.setName(name.toLowerCase());
+//            tag.setCreatedAt(LocalDateTime.now());
+//            tag.setUpdatedAt(LocalDateTime.now());
+//
+//            Tag savedTag = tagService.save(tag);
+//
+//            tags.add(savedTag) ;
+//        }
 
         for(String name : tagStringList){
-            Tag tag = new Tag() ;
+            Optional<Tag> tagOptional = tagService.findByName(name.toLowerCase()) ;
 
-            tag.setName(name);
-            tag.setCreatedAt(LocalDateTime.now());
-            tag.setUpdatedAt(LocalDateTime.now());
+            if(tagOptional.isEmpty()){
+                Tag tag = new Tag() ;
+                tag.setName(name.toLowerCase());
+                tag.setCreatedAt(LocalDateTime.now());
+                tag.setUpdatedAt(LocalDateTime.now());
+                Tag savedTag = tagService.save(tag);
 
-            Tag savedTag = tagService.save(tag);
-
-            tags.add(savedTag) ;
+                tags.add(savedTag) ;
+            }else{
+                Tag tag = tagOptional.get() ;
+                tags.add(tag) ;
+            }
         }
 
         post.setCreatedAt(LocalDateTime.now());
         post.setUpdatedAt(LocalDateTime.now());
+        post.setPublished(true);
+
+        int size =0 ;
+        StringBuilder desc = new StringBuilder() ;
+        String content = postRequestDto.getContent() ;
+
+        List<String> contentStringList = Arrays.stream(content.split("\\."))
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        for(String sentence : contentStringList){
+            if(size > 1 ){
+                break;
+            }
+            desc.append(sentence) ;
+            size++ ;
+        }
+
+        post.setExcerpt(desc.toString());
         post.setTags(tags);
 
         postRespository.save(post) ;
@@ -70,4 +105,44 @@ public class PostServiceImpl implements PostService {
         Optional<Post> postOptional = postRespository.findById(id) ;
         return postOptional.get() ;
     }
+
+    @Override
+    public void updateBlog(PostRequestDto updatedPost){
+        Post post = getPostById(updatedPost.getId()) ;
+
+        post.setContent(updatedPost.getContent());
+        post.setTitle(updatedPost.getTitle());
+        post.setUpdatedAt(LocalDateTime.now());
+
+        String tagsString = updatedPost.getTags();
+
+        System.out.println("tags :" + tagsString);
+
+        List<String> tagStringList = Arrays.stream(tagsString.split(","))
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        List<Tag> tags = new ArrayList<>() ;
+
+        for(String name : tagStringList){
+           Optional<Tag> tagOptional = tagService.findByName(name.toLowerCase()) ;
+
+           if(tagOptional.isEmpty()){
+               Tag tag = new Tag() ;
+               tag.setName(name.toLowerCase());
+               tag.setCreatedAt(LocalDateTime.now());
+               tag.setUpdatedAt(LocalDateTime.now());
+               Tag savedTag = tagService.save(tag);
+
+               tags.add(savedTag) ;
+           }else{
+               Tag tag = tagOptional.get() ;
+               tags.add(tag) ;
+           }
+        }
+
+        post.setTags(tags);
+        postRespository.save(post) ;
+    }
+
 }

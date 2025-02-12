@@ -13,6 +13,10 @@
 <header>
     <h2>My Blog Application</h2>
     <a href="#" class="login">Login</a>
+    <div class="header-buttons">
+        <a th:href="@{'/edit/' + ${post.id}}" class="edit-btn">Edit</a>
+        <a th:href="@{'/delete/' + ${post.id}}" class="delete-btn" onclick="return confirm('Are you sure?');">Delete</a>
+    </div>
 </header>
 
 <main>

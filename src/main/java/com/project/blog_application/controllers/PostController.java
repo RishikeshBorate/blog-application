@@ -1,13 +1,14 @@
 package com.project.blog_application.controllers;
 
 import com.project.blog_application.dtos.PostRequestDto;
+import com.project.blog_application.dtos.PostToPostRequestDtoMapper;
 import com.project.blog_application.models.Post;
+import com.project.blog_application.models.Tag;
 import com.project.blog_application.services.PostService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Controller
@@ -45,5 +46,36 @@ public class PostController {
         Post post = postService.getPostById(id);
         model.addAttribute("post" , post);
         return "post" ;
+    }
+
+    @GetMapping("edit/{postId}")
+    public String editPostForm(@PathVariable("postId") Long id , Model model){
+        Post post = postService.getPostById(id);
+
+        PostToPostRequestDtoMapper mapper = new PostToPostRequestDtoMapper() ;
+        PostRequestDto postRequestDto = mapper.mapPostToPostRequestDto(post); ;
+
+//        PostRequestDto postRequestDto = new PostRequestDto() ;
+//
+//        postRequestDto.setId(post.getId());
+//        postRequestDto.setTitle(post.getTitle());
+//        postRequestDto.setContent(post.getContent());
+//
+//        List<Tag> tags = post.getTags() ;
+//        String tagString = "" ;
+//        for(Tag tag : tags){
+//            tagString = tag.getName() + "," ;
+//        }
+//
+//        postRequestDto.setTags(tagString);
+
+        model.addAttribute("post" , postRequestDto);
+        return "editpost" ;
+    }
+
+    @PostMapping("/editpost")
+    public String editPost(@ModelAttribute("post") PostRequestDto postRequestDto){
+        postService.updateBlog(postRequestDto);
+        return "redirect:/" ;
     }
 }
