@@ -4,6 +4,8 @@ import com.project.blog_application.models.Tag;
 import com.project.blog_application.repositories.TagRepository;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,5 +26,10 @@ public class TagServiceImpl implements TagService{
     public Optional<Tag> findByName(String tagName){
         Optional<Tag> tagOptional =  tagRepository.findByName(tagName) ;
         return tagOptional ;
+    }
+
+    @Override
+    public List<Tag> findAllTags() {
+        return tagRepository.findAll() ;
     }
 }

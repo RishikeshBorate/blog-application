@@ -1,11 +1,9 @@
 package com.project.blog_application.models;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 public class Comment {
@@ -14,10 +12,13 @@ public class Comment {
     private Long id ;
     private String name ;
     private String email ;
-    private String comment ;
+    private String commentText;
     private int postId ;
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
+
+    @ManyToMany
+    private List<Comment> comments ;
 
     public Long getId() {
         return id;
@@ -43,12 +44,12 @@ public class Comment {
         this.email = email;
     }
 
-    public String getComment() {
-        return comment;
+    public String getCommentText() {
+        return commentText;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public void setCommentText(String commentText) {
+        this.commentText = commentText;
     }
 
     public int getPostId() {
@@ -74,4 +75,13 @@ public class Comment {
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
+
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComment(List<Comment> comments) {
+        this.comments = comments;
+    }
+
 }

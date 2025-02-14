@@ -1,0 +1,57 @@
+  /* Fixed filter section on the left */
+        .filter-section {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 200px; /* Decreased from 250px */
+            height: 100vh;
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        /* Adjust content margin to prevent overlap */
+        .content-container {
+            margin-left: 220px; /* Adjusted to match filter width + spacing */
+            padding: 20px;
+        }
+
+
+
+
+        /* Ensures main content does not overlap */
+        .content-container {
+            margin-left: 260px; /* Matches filter-section width + spacing */
+            padding: 20px;
+        }
+
+        .blog-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Creates a 2-column layout */
+            gap: 20px; /* Space between cards */
+        }
+
+        .blog-card {
+            padding: 15px;
+            border: 1px solid #ddd;
+            background-color: white;
+            border-radius: 8px; /* Optional: Rounded corners */
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1); /* Optional: Subtle shadow */
+        }
+
+
+        /* Ensure header and footer are properly aligned */
+        header, footer {
+            margin-left: 260px; /* Same as content-container */
+            padding: 10px;
+            background-color: #fff;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        footer {
+            border-top: 1px solid #ddd;
+        }

@@ -3,8 +3,12 @@ package com.project.blog_application.services;
 import com.project.blog_application.dtos.PostRequestDto;
 import com.project.blog_application.models.Post;
 import com.project.blog_application.models.Tag;
+import com.project.blog_application.repositories.CustomPostRepository;
 import com.project.blog_application.repositories.PostRespository;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,10 +22,12 @@ import java.util.stream.Collectors;
 public class PostServiceImpl implements PostService {
     private PostRespository postRespository ;
     private TagService tagService ;
+    private CustomPostRepository customPostRepository ;
 
-    public PostServiceImpl(PostRespository postRespository , TagService tagService){
+    public PostServiceImpl(PostRespository postRespository , TagService tagService , CustomPostRepository customPostRepository){
         this.postRespository = postRespository ;
         this.tagService = tagService ;
+        this.customPostRepository = customPostRepository ;
     }
 
     @Override
@@ -144,5 +150,23 @@ public class PostServiceImpl implements PostService {
         post.setTags(tags);
         postRespository.save(post) ;
     }
+
+    @Override
+    public Page<Post> findAllPaginatedPost(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo - 1 , pageSize) ;
+        return postRespository.findAll(pageable);
+    }
+
+    @Override
+    public List<Tag> getTagList() {
+        List<Tag> tagList = tagService.findAllTags();
+        return tagList;
+    }
+
+    @Override
+    public Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable, String sortBy, String sortOrder) {
+        return customPostRepository.findFilteredPosts(authorId, tagIds, isPublished, startDate, endDate, pageable, sortBy, sortOrder);
+    }
+
 
 }
