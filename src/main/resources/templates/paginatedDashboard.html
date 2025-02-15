@@ -6,12 +6,15 @@
     <title>My Blog Application</title>
     <link rel="stylesheet"
           th:href="@{/css/paginatedDashboard.css}"/>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
 <header>
     <h1>My Blog Application</h1>
     <div class="header-right">
-        <input type="text" placeholder="Search">
+
         <select>
             <option>Filter</option>
         </select>
@@ -24,7 +27,7 @@
 
 <main>
     <div class="filter-section">
-        <form method="get" th:action="@{/}">
+        <form th:method="get" th:action="@{/}" th:onsubmit="removeEmptyFields(this)">
             <div class="tags">
                 <h3>Tags</h3>
                 <div th:each="tag : ${tagList}">
@@ -35,12 +38,33 @@
             <div class="author">
                 <h3>Author</h3>
                 <div th:each="category : ${categoryList}">
-                    <input type="checkbox" th:id="${category}" th:name="selectedCategories" th:value="${category}">
+                    <input type="checkbox" th:id="${category}" th:name="author" th:value="${category}">
                     <label th:for="${category}" th:text="${category}"></label>
                 </div>
             </div>
+            <div class="search">
+                <h3>Search</h3>
+                <input th:type="text" th:name="search" placeholder="Search...">
+            </div>
+            <div class="date-filter">
+                <h3>Select Date Range</h3>
+                <label th:for="startDate">From:</label>
+                <input th:type="text" th:id="startDate" th:name="startDate" class="datepicker">
+                <label th:for="endDate">To:</label>
+                <input th:type="text" id="endDate" th:name="endDate" class="datepicker">
+            </div>
+            <div class="sorting">
+                <h3>Sort By</h3>
+                <select th:name="sortBy">
+                    <option th:value="createdAt">Date</option>
+                    <option th:value="title">Title</option>
+                </select>
+                <select th:name="sortOrder">
+                    <option th:value="desc">Descending</option>
+                    <option th:value="asc">Ascending</option>
+                </select>
+            </div>
             <button type="submit">Apply</button>
-
         </form>
     </div>
 
@@ -74,5 +98,22 @@
     </div>
 
 </footer>
+
+<script>
+    $(document).ready(function(){
+        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
+    });
+
+    function removeEmptyFields(form) {
+    let inputs = form.querySelectorAll("input, select");
+
+    inputs.forEach(input => {
+        if (!input.value.trim()) {
+            input.removeAttribute("name"); // Remove empty fields
+        }
+       });
+    }
+
+</script>
 </body>
 </html>

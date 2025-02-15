@@ -20,7 +20,7 @@ public class CustomPostRepository {
     private EntityManager entityManager;
 
     public Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished,
-                                        LocalDateTime startDate, LocalDateTime endDate, Pageable pageable, String sortBy, String sortDirection) {
+                                        LocalDateTime startDate, LocalDateTime endDate, Pageable pageable, String sortBy, String sortDirection , String search) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Post> query = cb.createQuery(Post.class);
@@ -33,17 +33,17 @@ public class CustomPostRepository {
             predicates.add(tagsJoin.get("id").in(tagIds));
         }
 
-        //        if (search != null && !search.trim().isEmpty()) {
-//            String likePattern = "%" + search.toLowerCase() + "%";
-//            Predicate titlePredicate = cb.like(cb.lower(root.get("title")), likePattern);
-//            Predicate contentPredicate = cb.like(cb.lower(root.get("content")), likePattern);
-//            Predicate publisherPredicate = cb.like(cb.lower(root.get("publisher")), likePattern);
-//
-//            Join<Post, Tag> tagsJoin = root.join("tags", JoinType.LEFT);
-//            Predicate tagsPredicate = cb.like(cb.lower(tagsJoin.get("name")), likePattern);
-//
-//            predicates.add(cb.or(titlePredicate, contentPredicate, publisherPredicate, tagsPredicate));
-//        }
+        if (search != null && !search.trim().isEmpty()) {
+            String likePattern = "%" + search.toLowerCase() + "%";
+            Predicate titlePredicate = cb.like(cb.lower(root.get("title")), likePattern);
+            Predicate contentPredicate = cb.like(cb.lower(root.get("content")), likePattern);
+            //Predicate publisherPredicate = cb.like(cb.lower(root.get("publisher")), likePattern);
+
+            Join<Post, Tag> tagsJoin = root.join("tags", JoinType.LEFT);
+            Predicate tagsPredicate = cb.like(cb.lower(tagsJoin.get("name")), likePattern);
+
+            predicates.add(cb.or(titlePredicate, contentPredicate, tagsPredicate));
+        }
 
         query.where(cb.and(predicates.toArray(new Predicate[0])));
 

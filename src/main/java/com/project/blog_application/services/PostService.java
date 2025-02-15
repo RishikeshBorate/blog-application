@@ -17,5 +17,5 @@ public interface PostService {
     Page<Post> findAllPaginatedPost(int pageNo , int pageSize) ;
     List<Tag> getTagList();
     Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished,
-                                 LocalDateTime startDate, LocalDateTime endDate, Pageable pageable , String sortBy, String sortOrder) ;
+                                 String startDate, String endDate, Pageable pageable , String sortBy, String sortOrder ,  String search) ;
 }

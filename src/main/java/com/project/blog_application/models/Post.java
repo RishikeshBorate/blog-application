@@ -28,7 +28,7 @@ public class Post {
     @ManyToMany
     private List<Tag> tags ;
 
-    @OneToMany
+    @OneToMany(mappedBy = "post")
     private List<Comment> comments ;
 
     public Long getId() {

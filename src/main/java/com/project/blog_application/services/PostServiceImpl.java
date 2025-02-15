@@ -11,10 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 @Qualifier("PostServiceImpl")
@@ -164,8 +166,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable, String sortBy, String sortOrder) {
-        return customPostRepository.findFilteredPosts(authorId, tagIds, isPublished, startDate, endDate, pageable, sortBy, sortOrder);
+    public Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished, String startDate, String endDate, Pageable pageable, String sortBy, String sortOrder ,  String search) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd") ;
+
+        LocalDateTime start = null;
+        LocalDateTime end = null ;
+
+        if((startDate != null) && (endDate!=null)){
+            startDate.trim() ;
+            endDate.trim() ;
+
+            if(startDate.length() >0 && endDate.length()>0) {
+                start = LocalDateTime.parse(startDate, formatter);
+                end = LocalDateTime.parse(endDate, formatter);
+            }
+        }
+
+        return customPostRepository.findFilteredPosts(authorId, tagIds, isPublished, start, end, pageable, sortBy, sortOrder , search);
     }
 
 

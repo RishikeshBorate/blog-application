@@ -3,6 +3,7 @@ package com.project.blog_application.models;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,12 +14,19 @@ public class Comment {
     private String name ;
     private String email ;
     private String commentText;
-    private int postId ;
+    //private int postId ;
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
 
-    @ManyToMany
-    private List<Comment> comments ;
+    @ManyToOne
+    private User user ;
+
+    @OneToMany
+    private List<Comment> subComments = new ArrayList<>();
+
+    @ManyToOne
+    @JoinColumn(name = "post_id")
+    private Post post ;
 
     public Long getId() {
         return id;
@@ -52,13 +60,13 @@ public class Comment {
         this.commentText = commentText;
     }
 
-    public int getPostId() {
-        return postId;
-    }
-
-    public void setPostId(int postId) {
-        this.postId = postId;
-    }
+//    public int getPostId() {
+//        return postId;
+//    }
+//
+//    public void setPostId(int postId) {
+//        this.postId = postId;
+//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -76,12 +84,28 @@ public class Comment {
         this.updatedAt = updatedAt;
     }
 
-    public List<Comment> getComments() {
-        return comments;
+    public User getUser() {
+        return user;
     }
 
-    public void setComment(List<Comment> comments) {
-        this.comments = comments;
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<Comment> getSubComments() {
+        return subComments;
+    }
+
+    public void setSubComments(List<Comment> subComment) {
+        this.subComments = subComment;
+    }
+
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
     }
 
 }

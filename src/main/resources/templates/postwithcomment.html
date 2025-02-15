@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog Post</title>
+  <link rel="stylesheet" th:href="@{/css/poststyle.css}"/>
+  <style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+
+    main {
+        max-width: 800px;
+        margin: 20px auto;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .blog-post h1 {
+        font-size: 36px;
+        margin-bottom: 5px;
+    }
+
+    .author {
+        font-size: 16px;
+        color: gray;
+    }
+
+    .content {
+        text-align: justify;
+        line-height: 1.6;
+        margin-top: 20px;
+    }
+
+    .comment-section {
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid #ddd;
+    }
+
+    .comment-form input, .comment-form textarea {
+        width: 100%;
+        padding: 8px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .comment-form button {
+        padding: 8px 15px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .comment-form button:hover {
+        background-color: #218838;
+    }
+
+    .comment {
+        background: #f1f1f1;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+    }
+
+    .comment-actions {
+        margin-top: 5px;
+    }
+
+    .delete-comment {
+        background-color: #dc3545;
+        color: white;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
+
+    .delete-comment:hover {
+        background-color: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h2>My Blog Application</h2>
+  <a href="#" class="login">Login</a>
+</header>
+
+<main>
+  <article th:object="${post}" class="blog-post">
+    <h1 th:text="*{title}">Blog post title</h1>
+    <p class="author" th:text="*{author}">Author</p>
+    <p class="content" th:text="*{content}">content</p>
+  </article>
+</main>
+
+<section class="comment-section">
+  <h2>Comments</h2>
+
+  <form class="comment-form" th:object="${post}" th:action="@{'/comment/' + ${post.id}}" method="post">
+    <input th:type="text" th:name="userName" placeholder="Your Name" required>
+    <textarea th:name="commentText" placeholder="Write a comment..." required></textarea>
+    <button type="submit">Save Comment</button>
+  </form>
+
+  <div th:each="comment : ${post.comments}" class="comment">
+    <!-- Parent Comment -->
+    <p th:text="${comment.commentText}">Comment text</p>
+    <div class="comment-actions">
+      <form th:action="@{'/comment/' + ${comment.id} + '/delete'}" method="post">
+        <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
+      </form>
+      <button type="button" class="reply-button" th:attr="data-comment-id=${comment.id}">Reply</button>
+    </div>
+
+    <!-- Hidden Reply Form -->
+    <form class="reply-form" th:id="'reply-form-' + ${comment.id}" th:action="@{'/comment/reply/' + ${comment.id}}" method="post" style="display: none; margin-left: 20px;">
+      <input th:type="text" th:name="userName" placeholder="Your Name" required>
+      <input th:type="hidden" th:name="postId" th:value="${post.id}">
+      <textarea th:name="commentText" placeholder="Write a reply..." required></textarea>
+      <button type="submit">Post Reply</button>
+    </form>
+
+    <!-- Sub-comments (Recursive Structure) -->
+    <div th:if="${comment.subComments != null and !#lists.isEmpty(comment.subComments)}" style="margin-left: 40px; border-left: 2px solid #ddd; padding-left: 10px;">
+      <div th:each="subComment : ${comment.subComments}" class="comment">
+        <p th:text="${subComment.commentText}">Sub-comment text</p>
+        <div class="comment-actions">
+          <form th:action="@{'/comment/' + ${subComment.id} + '/delete'}" method="post">
+            <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
+          </form>
+          <button type="button" class="reply-button" th:attr="data-comment-id=${subComment.id}">Reply</button>
+        </div>
+
+        <!-- Hidden Reply Form for Sub-comment -->
+        <form class="reply-form" th:id="'reply-form-' + ${subComment.id}" th:action="@{'/comment/reply/' + ${subComment.id}}" th:method="post" style="display: none; margin-left: 20px;">
+          <input th:type="text" th:name="userName" placeholder="Your Name" required>
+          <input th:type="hidden" th:name="postId" th:value="${post.id}">
+          <textarea th:name="commentText" placeholder="Write a reply..." required></textarea>
+          <button type="submit">Post Reply</button>
+        </form>
+
+<!--        &lt;!&ndash; Further Nested Sub-comments &ndash;&gt;-->
+<!--        <div th:if="${not #lists.isEmpty(subComment.subComments)}" style="margin-left: 40px; border-left: 2px solid #ddd; padding-left: 10px;">-->
+<!--          <div th:each="nestedComment : ${subComment.subComments}" class="comment">-->
+<!--            <p th:text="${nestedComment.commentText}">Nested Comment</p>-->
+<!--            <div class="comment-actions">-->
+<!--              <form th:action="@{'/comment/' + ${nestedComment.id} + '/delete'}" method="post">-->
+<!--                <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>-->
+<!--              </form>-->
+<!--              <button type="button" class="reply-button" th:attr="data-comment-id=${nestedComment.id}">Reply</button>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; Hidden Reply Form for Nested Comment &ndash;&gt;-->
+<!--            <form class="reply-form" th:id="'reply-form-' + ${nestedComment.id}" th:action="@{'/comment/reply/' + ${nestedComment.id}}" method="post" style="display: none; margin-left: 20px;">-->
+<!--              <input type="text" name="userName" placeholder="Your Name" required>-->
+<!--              <textarea name="commentText" placeholder="Write a reply..." required></textarea>-->
+<!--              <button type="submit">Post Reply</button>-->
+<!--            </form>-->
+<!--          </div>-->
+<!--        </div>-->
+      </div>
+    </div>
+  </div>
+</section>
+</body>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll(".reply-button").forEach(button => {
+          button.addEventListener("click", function () {
+              let commentId = this.getAttribute("data-comment-id");
+              let replyForm = document.getElementById("reply-form-" + commentId);
+
+              // Toggle reply form visibility
+              if (replyForm.style.display === "none") {
+                  replyForm.style.display = "block";
+              } else {
+                  replyForm.style.display = "none";
+              }
+          });
+      });
+  });
+</script>
+</html>
+
+

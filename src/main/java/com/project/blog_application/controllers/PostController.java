@@ -4,6 +4,7 @@ import com.project.blog_application.dtos.PostRequestDto;
 import com.project.blog_application.dtos.PostToPostRequestDtoMapper;
 import com.project.blog_application.models.Post;
 import com.project.blog_application.models.Tag;
+import com.project.blog_application.services.CommentService;
 import com.project.blog_application.services.PostService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,11 @@ import java.util.List;
 @Controller
 public class PostController {
     private PostService postService ;
+    private CommentService commentService ;
 
-    public PostController(@Qualifier("PostServiceImpl") PostService postService){
+    public PostController(@Qualifier("PostServiceImpl") PostService postService , CommentService commentService){
         this.postService = postService ;
+        this.commentService = commentService ;
     }
 
     @GetMapping("/newpost")
@@ -50,9 +53,10 @@ public class PostController {
     public String getAllPosts(@RequestParam(value = "author" , required = false) Long authorId ,
                               @RequestParam(value = "tagId" , required = false) List<Long> tagIds ,
                               @RequestParam(value = "isPublished" , required = false) Boolean isPublished ,
-                              @RequestParam(value = "startDate" , required = false) LocalDateTime startDate ,
-                              @RequestParam(value = "startDate" , required = false) LocalDateTime endDate ,
-                              @RequestParam(value = "sortedBy" , required = false) String sortBy ,
+                              @RequestParam(value = "startDate" , required = false) String startDate ,
+                              @RequestParam(value = "startDate" , required = false) String endDate ,
+                              @RequestParam(value = "search" , required = false ) String search ,
+                              @RequestParam(value = "sortBy" , required = false) String sortBy ,
                               @RequestParam(value = "sortOrder" , required = false) String sortOrder ,
                               @RequestParam(value = "start" , required = false , defaultValue = "1") Integer start ,
                               @RequestParam(value = "limit" , required = false , defaultValue = "10") Integer limit ,
@@ -64,7 +68,7 @@ public class PostController {
 
         Pageable pageable = PageRequest.of(pageNo - 1 , limit) ;
 
-        Page<Post> postPage=  postService.findFilteredPosts(authorId, tagIds,  isPublished,  startDate,  endDate,  pageable,  sortBy,  sortOrder) ;
+        Page<Post> postPage=  postService.findFilteredPosts(authorId, tagIds,  isPublished,  startDate,  endDate,  pageable,  sortBy,  sortOrder , search) ;
 
         List<Post> postList = postPage.getContent() ;
         List<Tag> tagsList = postService.getTagList() ;
@@ -91,7 +95,8 @@ public class PostController {
     public String getPostById(@PathVariable("postId") Long id , Model model) {
         Post post = postService.getPostById(id);
         model.addAttribute("post" , post);
-        return "post" ;
+        //return "post" ;
+        return "postwithcomment" ;
     }
 
     @GetMapping("edit/{postId}")
@@ -140,5 +145,11 @@ public class PostController {
         model.addAttribute("postt" , new Post()) ;
         model.addAttribute("tagList" , tagsList) ;
         return "paginatedDashboard" ;
+    }
+
+    @PostMapping("/comment/{id}")
+    public String addComment(@PathVariable("id") Long postId , @RequestParam("userName") String user , @RequestParam("commentText")String commentText){
+          commentService.addComment(postId, user, commentText);
+          return "redirect:/post/" + postId ;
     }
 }
