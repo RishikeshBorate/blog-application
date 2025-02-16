@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,23 +35,15 @@ public class PostController {
     public String createBlogForm(Model model){
         PostRequestDto postRequestDto = new PostRequestDto() ;
         model.addAttribute("post" , postRequestDto) ;
-
         return "newpost" ;
     }
 
     @PostMapping("/newpost")
-    public String createBlog(@ModelAttribute PostRequestDto postRequestDto){
-       postService.createBlog(postRequestDto);
-       return "redirect:/newpost" ;
+    public String createBlog(@ModelAttribute PostRequestDto postRequestDto ,Authentication authentication){
+        String userName = authentication.getName();
+       postService.createBlog(postRequestDto , userName);
+       return "redirect:/" ;
     }
-
-//    @GetMapping("/")
-//    public String getAllPosts(Model model){
-//        List<Post> postList = postService.getAllPosts();
-//        model.addAttribute("postList" , postList) ;
-//        model.addAttribute("post" , new Post()) ;
-//        return "dashboard" ;
-//    }
 
     @GetMapping("/")
     public String getAllPosts(@RequestParam(value = "author" , required = false) Long authorId ,
@@ -92,7 +88,9 @@ public class PostController {
 //    }
 
     @GetMapping("/post/{postId}")
-    public String getPostById(@PathVariable("postId") Long id , Model model) {
+    public String getPostById(@PathVariable("postId") Long id , Model model , @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails.getUsername();
+        System.out.println("email is --------------------" + email);
         Post post = postService.getPostById(id);
         model.addAttribute("post" , post);
         //return "post" ;
@@ -100,8 +98,17 @@ public class PostController {
     }
 
     @GetMapping("edit/{postId}")
-    public String editPostForm(@PathVariable("postId") Long id , Model model){
+    public String editPostForm(@PathVariable("postId") Long id , Model model , Authentication authentication){
+        String loggedInUser = authentication.getName() ;
         Post post = postService.getPostById(id);
+
+        String author = post.getAuthor().getEmail() ;
+
+        boolean isOwner = author.equals(loggedInUser) ;
+
+        if (!isOwner) {
+            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        }
 
         PostToPostRequestDtoMapper mapper = new PostToPostRequestDtoMapper() ;
         PostRequestDto postRequestDto = mapper.mapPostToPostRequestDto(post); ;
@@ -151,5 +158,11 @@ public class PostController {
     public String addComment(@PathVariable("id") Long postId , @RequestParam("userName") String user , @RequestParam("commentText")String commentText){
           commentService.addComment(postId, user, commentText);
           return "redirect:/post/" + postId ;
+    }
+
+    @GetMapping("/delete/{postId}")
+    public String deletePost(@PathVariable("postId") Long postId){
+        postService.deletePost(postId) ;
+        return "redirect:/" ;
     }
 }

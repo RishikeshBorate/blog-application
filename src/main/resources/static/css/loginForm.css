@@ -1,0 +1,42 @@
+body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background-color: #fff;
+        margin: 0;
+    }
+    .container {
+        text-align: center;
+    }
+    h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+    }
+    input {
+        display: block;
+        width: 250px;
+        padding: 10px;
+        margin: 10px auto;
+        border: 1px solid black;
+        border-radius: 5px;
+    }
+    button {
+        padding: 10px 20px;
+        border: 1px solid black;
+        background: white;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    button:hover {
+        background: #f0f0f0;
+    }
+    .register-link {
+        margin-top: 10px;
+        font-size: 14px;
+    }
+    .register-link a {
+        text-decoration: none;
+        color: blue;
+    }

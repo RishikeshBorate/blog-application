@@ -19,4 +19,7 @@ public interface PostRespository extends JpaRepository<Post , Long> {
 
     @Override
     List<Post> findAll(Sort sort);
+
+    @Override
+    void deleteById(Long aLong);
 }

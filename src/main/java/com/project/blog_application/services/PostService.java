@@ -6,11 +6,10 @@ import com.project.blog_application.models.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PostService {
-    public void createBlog(PostRequestDto postRequestDto);
+    public void createBlog(PostRequestDto postRequestDto , String userName);
     List<Post> getAllPosts();
     Post getPostById(Long id) ;
     void updateBlog(PostRequestDto postRequestDto);
@@ -18,4 +17,6 @@ public interface PostService {
     List<Tag> getTagList();
     Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished,
                                  String startDate, String endDate, Pageable pageable , String sortBy, String sortOrder ,  String search) ;
+
+    void deletePost(Long postId);
 }

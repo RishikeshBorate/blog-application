@@ -3,20 +3,22 @@ package com.project.blog_application.services;
 import com.project.blog_application.dtos.PostRequestDto;
 import com.project.blog_application.models.Post;
 import com.project.blog_application.models.Tag;
+import com.project.blog_application.models.User;
 import com.project.blog_application.repositories.CustomPostRepository;
 import com.project.blog_application.repositories.PostRespository;
+import com.project.blog_application.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 
 @Qualifier("PostServiceImpl")
@@ -25,15 +27,20 @@ public class PostServiceImpl implements PostService {
     private PostRespository postRespository ;
     private TagService tagService ;
     private CustomPostRepository customPostRepository ;
+    private UserRepository userRepository ;
 
-    public PostServiceImpl(PostRespository postRespository , TagService tagService , CustomPostRepository customPostRepository){
+    public PostServiceImpl(PostRespository postRespository , TagService tagService , CustomPostRepository customPostRepository , UserRepository userRepository){
         this.postRespository = postRespository ;
         this.tagService = tagService ;
         this.customPostRepository = customPostRepository ;
+        this.userRepository = userRepository ;
     }
 
     @Override
-    public void createBlog(PostRequestDto postRequestDto) {
+    public void createBlog(PostRequestDto postRequestDto , String userName) {
+        Optional<User> userOptional = userRepository.findByEmail(userName) ;
+        User user = userOptional.get();
+
         Post post = new Post() ;
 
         post.setTitle(postRequestDto.getTitle());
@@ -46,18 +53,6 @@ public class PostServiceImpl implements PostService {
                 .collect(Collectors.toList());
 
         List<Tag> tags = new ArrayList<>() ;
-//
-//        for(String name : tagStringList){
-//            Tag tag = new Tag() ;
-//
-//            tag.setName(name.toLowerCase());
-//            tag.setCreatedAt(LocalDateTime.now());
-//            tag.setUpdatedAt(LocalDateTime.now());
-//
-//            Tag savedTag = tagService.save(tag);
-//
-//            tags.add(savedTag) ;
-//        }
 
         for(String name : tagStringList){
             Optional<Tag> tagOptional = tagService.findByName(name.toLowerCase()) ;
@@ -98,8 +93,9 @@ public class PostServiceImpl implements PostService {
 
         post.setExcerpt(desc.toString());
         post.setTags(tags);
+        post.setAuthor(user);
 
-        postRespository.save(post) ;
+        user.getPostList().add(postRespository.save(post));
     }
 
     @Override
@@ -183,6 +179,11 @@ public class PostServiceImpl implements PostService {
         }
 
         return customPostRepository.findFilteredPosts(authorId, tagIds, isPublished, start, end, pageable, sortBy, sortOrder , search);
+    }
+
+    @Override
+    public void deletePost(Long postId) {
+        postRespository.deleteById(postId);
     }
 
 

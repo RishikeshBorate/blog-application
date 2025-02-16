@@ -1,6 +1,5 @@
 package com.project.blog_application.dtos;
 
-import com.project.blog_application.models.Post;
 import com.project.blog_application.models.User;
 
 import java.time.LocalDateTime;

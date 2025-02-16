@@ -31,11 +31,11 @@ header {
         }
 
         .delete-btn {
-            background-color: #DC3545;
+            background-color: #E57373;
         }
 
         .delete-btn:hover {
-            background-color: #a71d2a;
+            background-color: 	#FFCDD2;
         }
 
 .login {
