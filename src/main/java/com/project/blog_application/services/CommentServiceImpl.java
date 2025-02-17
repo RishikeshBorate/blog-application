@@ -6,6 +6,7 @@ import com.project.blog_application.repositories.CommentRepository;
 import com.project.blog_application.repositories.PostRespository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,9 +25,10 @@ public class CommentServiceImpl implements CommentService{
         Post post = postOptional.get();
 
         Comment comment = new Comment();
-      //  comment.setUserName(userName);
+        comment.setName(userName);
         comment.setCommentText(commentText);
         comment.setPost(post);
+        comment.setCreatedAt(LocalDateTime.now());
         post.getComments().add(commentRepository.save(comment));
         postRespository.save(post);
     }
@@ -48,5 +50,26 @@ public class CommentServiceImpl implements CommentService{
          subComment.setPost(postOptional.get());
          parentComment.getSubComments().add(commentRepository.save(subComment)) ;
          commentRepository.save(parentComment) ;
+    }
+
+    @Override
+    public void deleteComment(Long commentId){
+        commentRepository.deleteById(commentId);
+    }
+
+    @Override
+    public void editComment(Comment comment) {
+         Optional<Comment> oldCommentOptional = commentRepository.findById(comment.getId()) ;
+
+         Comment oldComment = oldCommentOptional.get() ;
+
+         comment.setPost(oldComment.getPost());
+         comment.setSubComments(oldComment.getSubComments());
+         comment.setCreatedAt(oldComment.getCreatedAt());
+         comment.setUpdatedAt(LocalDateTime.now());
+         comment.setUser(oldComment.getUser());
+         comment.setEmail(oldComment.getEmail());
+
+         commentRepository.save(comment) ;
     }
 }

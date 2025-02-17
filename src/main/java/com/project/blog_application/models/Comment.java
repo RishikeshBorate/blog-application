@@ -14,14 +14,13 @@ public class Comment {
     private String name ;
     private String email ;
     private String commentText;
-    //private int postId ;
     private LocalDateTime createdAt ;
     private LocalDateTime updatedAt ;
 
     @ManyToOne
     private User user ;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.REMOVE)
     private List<Comment> subComments = new ArrayList<>();
 
     @ManyToOne
@@ -59,14 +58,6 @@ public class Comment {
     public void setCommentText(String commentText) {
         this.commentText = commentText;
     }
-
-//    public int getPostId() {
-//        return postId;
-//    }
-//
-//    public void setPostId(int postId) {
-//        this.postId = postId;
-//    }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
