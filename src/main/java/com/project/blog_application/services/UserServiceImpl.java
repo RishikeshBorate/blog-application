@@ -32,7 +32,7 @@ public class UserServiceImpl implements UserService{
         user.setName(userRequestDto.getName());
         user.setRole(userRequestDto.getRole());
         user.setEmail(userRequestDto.getEmail());
-        user.setRole("ROLE_ADMIN");
+        user.setRole("ROLE_AUTHOR");
         user.setPassword(bCryptPasswordEncoder.encode(userRequestDto.getPassword()));
         userRepository.save(user) ;
     }
