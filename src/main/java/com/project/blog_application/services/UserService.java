@@ -2,9 +2,11 @@ package com.project.blog_application.services;
 
 import com.project.blog_application.dtos.UserRequestDto;
 import com.project.blog_application.models.User;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 
 public interface UserService {
 
