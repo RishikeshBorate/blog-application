@@ -16,12 +16,9 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(auth ->
                 auth
                         .requestMatchers("/login").anonymous()
-                        .requestMatchers("/edit/**" , "/editpost/**").hasRole("ADMIN")
-                        .requestMatchers("/delete/**").hasRole("ADMIN")
-                        .requestMatchers("/post/**").hasAnyRole("ADMIN", "AUTHOR")
-                        .requestMatchers("/","/signup", "/logout").permitAll()
+                        .requestMatchers("/edit/**" , "/editpost/**" , "/delete/**" , "/newpost/**" , "/comment/delete/{commentId}" ,"/comment/edit/{commentId}").hasAnyRole("ADMIN" ,"AUTHOR")
+                        .requestMatchers("/","/signup", "/logout" , "/comment/reply/{commentId}" ,"/comment/{id}","/comment/reply/{commentId}" , "/post/{postId}").permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**" ).permitAll()
-                        .requestMatchers("/newpost/**").hasAnyRole("ADMIN", "AUTHOR")
                         .anyRequest().authenticated()
                 )
         .formLogin(form ->
@@ -56,7 +53,6 @@ public class SecurityConfig {
         daoAuthenticationProvider.setUserDetailsService(this.getUserDetailService());
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
-
     }
 
 }

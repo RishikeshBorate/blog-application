@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService{
     @Autowired
@@ -19,6 +22,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void addNewUser(UserRequestDto userRequestDto) {
+        Optional<User> userOptional = userRepository.findByEmail(userRequestDto.getEmail()) ;
+
+        if(!userOptional.isEmpty()){
+            throw new RuntimeException("user with same emailId already exist") ;
+        }
 
         User user = new User() ;
         user.setName(userRequestDto.getName());
@@ -27,6 +35,15 @@ public class UserServiceImpl implements UserService{
         user.setRole("ROLE_AUTHOR");
         user.setPassword(bCryptPasswordEncoder.encode(userRequestDto.getPassword()));
         userRepository.save(user) ;
+    }
 
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAll() ;
+    }
+
+    @Override
+    public Optional<User> findUserByEmail(String emailId) {
+        return userRepository.findByEmail(emailId) ;
     }
 }

@@ -28,6 +28,41 @@
         margin-bottom: 5px;
     }
 
+    .tags-container {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.blog-title {
+    text-decoration: none;
+    color: #000000;
+    font-size: 2rem;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+.blog-title:hover {
+    color: #555555;
+}
+
+.tag {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    padding: 6px 12px;
+    font-size: 1rem;
+    border-radius: 20px;
+    border: 1px solid #3a3a3a;
+    transition: all 0.3s ease-in-out;
+}
+
+.tag:hover {
+    background-color: #292929;
+    border-color: #4a4a4a;
+}
+
+
     .author {
         font-size: 16px;
         color: gray;
@@ -93,7 +128,7 @@
 </head>
 <body>
 <header>
-  <h2>My Blog Application</h2>
+  <h1><a th:href="@{/}" class="blog-title">My Blog Application</a></h1>
   <a th:href="@{/login}" class="login">Login</a>
   <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or post.author.email==#authentication.name}">
     <div class="header-buttons" >
@@ -106,7 +141,10 @@
 <main>
   <article th:object="${post}" class="blog-post">
     <h1 th:text="*{title}">Blog post title</h1>
-    <p class="author" th:text="*{author}">Author</p>
+    <p class="author" th:text="*{author.name}">Author</p>
+    <div class="tags-container">
+      <span class="tag" th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</span>
+    </div>
     <p class="content" th:text="*{content}">content</p>
   </article>
 </main>
@@ -121,11 +159,17 @@
   </form>
 
   <div th:each="comment : ${post.comments}" class="comment">
+    <p th:text="${comment.name}">User</p>
     <p th:text="${comment.commentText}">Comment text</p>
     <div class="comment-actions">
-      <form th:action="@{'/comment/' + ${comment.id} + '/delete'}" method="post">
-        <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
-      </form>
+      <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or post.author.email==#authentication.name}">
+        <form th:action="@{'/comment/delete/' + ${comment.id}}" method="post">
+          <button th:name="postId" th:value=${post.id} type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
+        </form>
+        <form th:action="@{'/comment/edit/' + ${comment.id}}" method="get">
+          <button th:name="postId" th:value=${post.id} type="submit" class="delete-comment" onclick="return confirm('Edit this comment?');">Edit</button>
+        </form>
+      </div>
       <button type="button" class="reply-button" th:attr="data-comment-id=${comment.id}">Reply</button>
     </div>
 
@@ -138,11 +182,17 @@
 
     <div th:if="${comment.subComments != null and !#lists.isEmpty(comment.subComments)}" style="margin-left: 40px; border-left: 2px solid #ddd; padding-left: 10px;">
       <div th:each="subComment : ${comment.subComments}" class="comment">
+        <p th:text="${subComment.name}">Sub-comment User</p>
         <p th:text="${subComment.commentText}">Sub-comment text</p>
         <div class="comment-actions">
-          <form th:action="@{'/comment/' + ${subComment.id} + '/delete'}" method="post">
-            <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
-          </form>
+          <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or post.author.email==#authentication.name}">
+            <form th:action="@{'/comment/delete/' + ${subComment.id}}" method="post">
+              <button th:name="postId" th:value=${post.id}  type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>
+            </form>
+            <form th:action="@{'/comment/edit/' + ${subComment.id}}" method="get">
+              <button th:name="postId" th:value=${post.id}  type="submit" class="delete-comment" onclick="return confirm('Edit this comment?');">Edit</button>
+            </form>
+          </div>
           <button type="button" class="reply-button" th:attr="data-comment-id=${subComment.id}">Reply</button>
         </div>
 
@@ -153,25 +203,6 @@
           <button type="submit">Post Reply</button>
         </form>
 
-<!--        &lt;!&ndash; Further Nested Sub-comments &ndash;&gt;-->
-<!--        <div th:if="${not #lists.isEmpty(subComment.subComments)}" style="margin-left: 40px; border-left: 2px solid #ddd; padding-left: 10px;">-->
-<!--          <div th:each="nestedComment : ${subComment.subComments}" class="comment">-->
-<!--            <p th:text="${nestedComment.commentText}">Nested Comment</p>-->
-<!--            <div class="comment-actions">-->
-<!--              <form th:action="@{'/comment/' + ${nestedComment.id} + '/delete'}" method="post">-->
-<!--                <button type="submit" class="delete-comment" onclick="return confirm('Delete this comment?');">Delete</button>-->
-<!--              </form>-->
-<!--              <button type="button" class="reply-button" th:attr="data-comment-id=${nestedComment.id}">Reply</button>-->
-<!--            </div>-->
-
-<!--            &lt;!&ndash; Hidden Reply Form for Nested Comment &ndash;&gt;-->
-<!--            <form class="reply-form" th:id="'reply-form-' + ${nestedComment.id}" th:action="@{'/comment/reply/' + ${nestedComment.id}}" method="post" style="display: none; margin-left: 20px;">-->
-<!--              <input type="text" name="userName" placeholder="Your Name" required>-->
-<!--              <textarea name="commentText" placeholder="Write a reply..." required></textarea>-->
-<!--              <button type="submit">Post Reply</button>-->
-<!--            </form>-->
-<!--          </div>-->
-<!--        </div>-->
       </div>
     </div>
   </div>

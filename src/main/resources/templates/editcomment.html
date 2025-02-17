@@ -10,17 +10,14 @@
 <body>
 <div class="container">
 
-    <form th:action="@{/editpost}"
-          th:object="${post}"
+    <form th:action="@{'/comment/edit/' + ${comment.id}}"
+          th:object="${comment}"
           method="POST">
 
-        <h1>Edit post</h1>
+        <h1>Edit comment</h1>
         <input type="hidden" th:field="*{id}">
-        <input type="text" th:field="*{title}" placeholder="Title">
-        <input type="text" th:field="*{tags}" placeholder="Tags">
-        <input type="text" id="authorName" th:text="${authorName}"
-               th:attr="readonly=${role == 'ROLE_ADMIN' ? 'false' : 'true'}">
-        <textarea th:field="*{content}" placeholder="Enter your content here..."></textarea>
+        <input type="text" th:field="*{name}" placeholder="User">
+        <textarea th:field="*{commentText}" placeholder="Enter your content here..."></textarea>
         <button>Publish</button>
     </form>
 </div>

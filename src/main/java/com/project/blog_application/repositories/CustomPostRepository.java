@@ -2,6 +2,7 @@ package com.project.blog_application.repositories;
 
 import com.project.blog_application.models.Post;
 import com.project.blog_application.models.Tag;
+import com.project.blog_application.models.User;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -19,7 +20,7 @@ public class CustomPostRepository {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public Page<Post> findFilteredPosts(Long authorId, List<Long> tagIds, Boolean isPublished,
+    public Page<Post> findFilteredPosts(List<Long> authorId, List<Long> tagIds, Boolean isPublished,
                                         LocalDateTime startDate, LocalDateTime endDate, Pageable pageable, String sortBy, String sortDirection , String search) {
 
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -33,11 +34,20 @@ public class CustomPostRepository {
             predicates.add(tagsJoin.get("id").in(tagIds));
         }
 
+        if (authorId != null && !authorId.isEmpty()) {
+            Join<Post, User> authorJoin = root.join("author", JoinType.INNER);
+            predicates.add(authorJoin.get("id").in(authorId));
+        }
+
+        if (startDate != null && endDate != null) {
+            predicates.add(cb.between(root.get("createdAt"), startDate, endDate));
+        }
+
         if (search != null && !search.trim().isEmpty()) {
             String likePattern = "%" + search.toLowerCase() + "%";
             Predicate titlePredicate = cb.like(cb.lower(root.get("title")), likePattern);
             Predicate contentPredicate = cb.like(cb.lower(root.get("content")), likePattern);
-            //Predicate publisherPredicate = cb.like(cb.lower(root.get("publisher")), likePattern);
+            Predicate publisherPredicate = cb.like(cb.lower(root.get("publisher")), likePattern);
 
             Join<Post, Tag> tagsJoin = root.join("tags", JoinType.LEFT);
             Predicate tagsPredicate = cb.like(cb.lower(tagsJoin.get("name")), likePattern);
@@ -65,9 +75,7 @@ public class CustomPostRepository {
         countQuery.select(cb.count(countRoot));
 
         List<Predicate> countPredicates = new ArrayList<>();
-        if (authorId != null) {
-            countPredicates.add(cb.equal(countRoot.get("author").get("id"), authorId));
-        }
+
         if (isPublished != null) {
             countPredicates.add(cb.equal(countRoot.get("isPublished"), isPublished));
         }

@@ -14,9 +14,11 @@
           th:object="${post}"
           method="POST">
 
-        <h1>New/Edit post</h1>
+        <h1>New post</h1>
         <input type="text" th:field="*{title}" placeholder="Title">
         <input type="text" th:field="*{tags}" placeholder="Tags">
+        <input type="text" th:id="authorName" th:text="${authorName}"
+               th:attr="readonly=${role == 'ROLE_ADMIN' ? 'false' : 'true'}">
         <textarea th:field="*{content}" placeholder="Enter your content here..."></textarea>
         <button>Publish</button>
     </form>

@@ -13,7 +13,7 @@
 </head>
 <body>
 <header>
-    <h1>My Blog Application</h1>
+    <h1><a th:href="@{/}" class="blog-title">My Blog Application</a></h1>
     <div class="header-right">
         <div class="header-buttons">
             <div sec:authorize="isAnonymous()">
@@ -24,7 +24,7 @@
                     <input th:type="submit" th:value="Logout" class="logout-btn" onclick="return confirm('Are you sure?');"/>
                 </form>
             </div>
-            <div >
+            <div sec:authorize="isAuthenticated()">
                 <a th:href="@{/newpost}" class="newpost-btn">Create New Post</a>
             </div>
         </div>
@@ -37,37 +37,45 @@
             <div class="tags">
                 <h3>Tags</h3>
                 <div th:each="tag : ${tagList}">
-                    <input type="checkbox" th:name="tagId" th:value="${tag.id}">
-                    <label th:for="${tag}" th:text="${tag.name}"></label>
+                        <input type="checkbox"
+                               th:name="tagId"
+                               th:value="${tag.id}"
+                               th:checked="${tagId != null and tagId.contains(tag.id)}">
+                        <label th:for="${tag}" th:text="${tag.name}"></label>
                 </div>
             </div>
             <div class="author">
-                <h3>Author</h3>
-                <div th:each="category : ${categoryList}">
-                    <input type="checkbox" th:id="${category}" th:name="author" th:value="${category}">
-                    <label th:for="${category}" th:text="${category}"></label>
+                <h3>Authors</h3>
+                <div th:each="user : ${userList}">
+                    <input type="checkbox"
+                           th:name="authorId"
+                           th:value="${user.id}"
+                           th:checked="${authorId != null and authorId.contains(user.id)}">
+                    <label th:for="${user}" th:text="${user.name}"></label>
                 </div>
             </div>
             <div class="search">
                 <h3>Search</h3>
-                <input th:type="text" th:name="search" placeholder="Search...">
+                <input type="text" th:name="search" placeholder="Search..." th:value="${search}">
+
             </div>
             <div class="date-filter">
                 <h3>Select Date Range</h3>
                 <label th:for="startDate">From:</label>
-                <input th:type="text" th:id="startDate" th:name="startDate" class="datepicker">
+                <input type="datetime-local" th:id="startDate" th:name="startDate" class="datepicker" th:value="${startDate}">
+                <br>
                 <label th:for="endDate">To:</label>
-                <input th:type="text" id="endDate" th:name="endDate" class="datepicker">
+                <input type="datetime-local" th:id="endDate" th:name="endDate" class="datepicker" th:value="${endDate}">
             </div>
             <div class="sorting">
                 <h3>Sort By</h3>
                 <select th:name="sortBy">
-                    <option th:value="createdAt">Date</option>
-                    <option th:value="title">Title</option>
+                    <option th:value="createdAt" th:selected="${sortBy == 'createdAt'}">Date</option>
+                    <option th:value="title" th:selected="${sortBy == 'title'}">Title</option>
                 </select>
                 <select th:name="sortOrder">
-                    <option th:value="desc">Descending</option>
-                    <option th:value="asc">Ascending</option>
+                    <option th:value="desc" th:selected="${sortOrder == 'desc'}">Descending</option>
+                    <option th:value="asc" th:selected="${sortOrder == 'asc'}">Ascending</option>
                 </select>
             </div>
             <button type="submit">Apply</button>
@@ -81,7 +89,11 @@
         <div  th:each="post : ${postList}" class="blog-card">
             <a style="color:black" th:href="@{'/post/'+ ${post.id}}">
                     <h2 th:text="${post.title}"> Post Title </h2>
-                   <!-- <p class="author" th:text="${post.author.name}"> Author </p> -->
+                    <p class="author" th:text="${post.author.name}"> Author </p>
+                <div class="tags-container">
+                    <span class="tag" th:each="tag : ${post.tags}" th:text="${tag.name}">Tag</span>
+                </div>
+
                     <p th:text="${post.createdAt}"> createdAt </p>
                     <p th:text="${post.excerpt}"> content </p>
             </a>
@@ -94,11 +106,17 @@
 
     <div th:if="${totalPages > 1 }" >
         <div>
-            <a th:if="${currentPage > 1}" th:href="@{/(start=${currentPage - 1} , limit=${limit})}">Previous</a>
+            <a th:if="${currentPage > 1}" th:href="@{/(start=${currentPage - 1}, limit=${limit},
+                          tagId=${tagId}, authorId=${authorId}, search=${search},
+                          startDate=${startDate}, endDate=${endDate},
+                          sortBy=${sortBy}, sortOrder=${sortOrder})}">Previous</a>
             <span th:if="${currentPage == 1}" style="color:gray;">Previous</span>
         </div>
         <div>
-            <a th:if="${currentPage < totalPages}" th:href="@{/(start=${currentPage + 1} , limit=${limit})}">Next</a>
+            <a th:if="${currentPage < totalPages}" th:href="@{/(start=${currentPage + 1}, limit=${limit},
+                          tagId=${tagId}, authorId=${authorId}, search=${search},
+                          startDate=${startDate}, endDate=${endDate},
+                          sortBy=${sortBy}, sortOrder=${sortOrder})}">Next</a>
             <span th:if="${currentPage == totalPages}" style="color:gray;">Next</span>
         </div>
     </div>
@@ -106,16 +124,12 @@
 </footer>
 
 <script>
-    $(document).ready(function(){
-        $(".datepicker").datepicker({ dateFormat: 'yy-mm-dd' });
-    });
-
     function removeEmptyFields(form) {
     let inputs = form.querySelectorAll("input, select");
 
     inputs.forEach(input => {
         if (!input.value.trim()) {
-            input.removeAttribute("name"); // Remove empty fields
+            input.removeAttribute("name");
         }
        });
     }
