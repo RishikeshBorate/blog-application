@@ -145,6 +145,24 @@ public class PostServiceImpl implements PostService {
            }
         }
 
+        int size =0 ;
+        StringBuilder desc = new StringBuilder() ;
+        String content = updatedPost.getContent() ;
+
+        List<String> contentStringList = Arrays.stream(content.split("\\."))
+                .map(String::trim)
+                .collect(Collectors.toList());
+
+        for(String sentence : contentStringList){
+            if(size > 1 ){
+                break;
+            }
+            desc.append(sentence) ;
+            size++ ;
+        }
+
+        post.setExcerpt(desc.toString());
+
         post.setTags(tags);
         postRespository.save(post) ;
     }
@@ -170,6 +188,5 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long postId) {
         postRespository.deleteById(postId);
     }
-
 
 }
