@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -117,9 +118,10 @@ public class PostController {
         String author = post.getAuthor().getEmail() ;
 
         boolean isOwner = author.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
-            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        if (!access) {
+            throw new AccessDeniedException("You are not allowed to edit this post.");
         }
 
         PostToPostRequestDtoMapper mapper = new PostToPostRequestDtoMapper() ;
@@ -136,9 +138,10 @@ public class PostController {
         String author = post.getAuthor().getEmail() ;
 
         boolean isOwner = author.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
-            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        if (!access) {
+            throw new AccessDeniedException("You are not allowed to edit this post.");
         }
 
         postService.updateBlog(postRequestDto);
@@ -159,9 +162,10 @@ public class PostController {
         String author = post.getAuthor().getEmail() ;
 
         boolean isOwner = author.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
-            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        if (!access) {
+            throw new AccessDeniedException("You are not allowed to delete this post.");
         }
 
         postService.deletePost(postId) ;

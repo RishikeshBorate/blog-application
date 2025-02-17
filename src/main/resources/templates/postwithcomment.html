@@ -129,7 +129,9 @@
 <body>
 <header>
   <h1><a th:href="@{/}" class="blog-title">My Blog Application</a></h1>
-  <a th:href="@{/login}" class="login">Login</a>
+  <div  sec:authorize="isAnonymous()" >
+    <a th:href="@{/login}" class="login">Login</a>
+  </div>
   <div th:if="${#authorization.expression('hasRole(''ADMIN'')') or post.author.email==#authentication.name}">
     <div class="header-buttons" >
       <a th:href="@{'/edit/' + ${post.id}}" class="edit-btn">Edit</a>
@@ -147,7 +149,7 @@
     </div>
     <p class="content" th:text="*{content}">content</p>
   </article>
-</main>
+</main>post
 
 <section class="comment-section">
   <h2>Comments</h2>

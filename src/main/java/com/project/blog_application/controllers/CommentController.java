@@ -7,6 +7,7 @@ import com.project.blog_application.services.CommentService;
 import com.project.blog_application.services.PostService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +38,11 @@ public class CommentController {
         Post post = postService.getPostById(postId);
         User user = post.getAuthor();
 
-        boolean isOwner = loggedInUser.equals(user.getEmail());
+        boolean isOwner = user.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
-            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        if (!access) {
+            throw new AccessDeniedException("You are not allowed to delete this comment.");
         }
 
         commentService.deleteComment(commentId);
@@ -55,9 +57,10 @@ public class CommentController {
         Post post = commentOptional.get().getPost();
         User postAuthor = post.getAuthor();
 
-        boolean isOwner = loggedInUser.equals(postAuthor.getEmail());
+        boolean isOwner = postAuthor.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
+        if (!access) {
             throw new AccessDeniedException("You are not allowed to edit this comment.");
         }
 
@@ -74,10 +77,11 @@ public class CommentController {
         Post post = commentOptional.get().getPost();
         User user = post.getAuthor();
 
-        boolean isOwner = loggedInUser.equals(user.getEmail());
+        boolean isOwner = user.equals(loggedInUser) ;
+        boolean access = ( isOwner || authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ) ;
 
-        if (!isOwner && !authentication.getAuthorities().contains("ADMIN")) {
-            throw new AccessDeniedException("You are not allowed to edit this profile.");
+        if (!access) {
+            throw new AccessDeniedException("You are not allowed to delete this comment.");
         }
 
         commentService.editComment(comment);
